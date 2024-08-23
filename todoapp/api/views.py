@@ -6,34 +6,56 @@ from .models import Todo
 
 class TodoApi(APIView):
     def get(self, request):
-        # fetch data from the database and return it in json format
-        todos = Todo.objects.all()
+        # get the user id from the request path
+        userId = request.GET.get('userId')
+        # get the todos for the user
+        todos = Todo.objects.filter(userId=userId)
+        # serialize the todos
         serializer = TodoSerializer(todos, many=True)
-        return Response({'todos': serializer.data})
+        # return the serialized data
+        return Response(serializer.data)
     
     def post(self, request):
-        # create a new todo and return a response
+        # serialize the request data
         serializer = TodoSerializer(data=request.data)
+        # validate the data
         if serializer.is_valid():
+            # save the data
             serializer.save()
-            return Response({'todo': serializer.data})
-        else:
-            return Response(serializer.errors)
+            # return the serialized data
+            return Response(serializer.data)
+        # return an error response
+        return Response(serializer.errors, status=400)
     
     def put(self, request):
-        # Update a todo and return a response
-        todo = Todo.objects.get(id=request.data['id'])
-        serializer = TodoSerializer(instance=todo, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'todo': serializer.data})
-        else:
-            return Response(serializer.errors)
+        # get the todo id from the request path
+        print(request.data)
+        id = request.data['id']
+        # get the todo
+        todo = Todo.objects.get(id=id)
+
         
-    
+        # serialize the request data
+        serializer = TodoSerializer(todo, data=request.data)
+        # validate the data
+        if serializer.is_valid():
+            # save the data
+            serializer.save()
+            # return the serialized data
+            return Response(serializer.data)
+        # return an error response
+        return Response(serializer.errors, status=400)
+
     def delete(self, request):
-        # delete a todo and return a response
+        # delete the todo and return the same todo with id
+        id = request.data['id']
         todo = Todo.objects.get(id=request.data['id'])
         todo.delete()
-        return Response({'message': 'Todo deleted', 
-                         'status': True})
+        serializer = TodoSerializer(todo)
+        # prepare the response data with the id and the serialized data
+        responseData = {
+            'id': id,
+            'data': serializer.data
+        }
+        return Response(responseData)
+    

@@ -44,11 +44,12 @@ class IdentityApi(APIView):
             return Response({'message': 'Invalid credentials', 
                              'status': False})
         
-    
-    
     # update the identity and return a response
     def put(self, request):
-        identity = Identity.objects.get(id=request.data['id'])
+        identity = Identity.objects.get(email=request.data['email'])
+        
+        request.data['password'] = identity.password
+        
         serializer = IdentitySerializer(instance=identity, data=request.data)
         if serializer.is_valid():
             serializer.save()
