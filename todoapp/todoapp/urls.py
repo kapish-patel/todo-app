@@ -18,4 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('', include('api.urls')),
+    path('identity/', include('identity.urls')),
 ]

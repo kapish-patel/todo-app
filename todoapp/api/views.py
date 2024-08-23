@@ -4,8 +4,6 @@ from .serializers import TodoSerializer
 from .models import Todo
 
 
-# Create your views here.
-
 class TodoApi(APIView):
     def get(self, request):
         # fetch data from the database and return it in json format

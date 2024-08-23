@@ -21,5 +21,3 @@ class TodoSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
-
-
